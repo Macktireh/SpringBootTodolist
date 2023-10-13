@@ -59,6 +59,17 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
     }
 
     /**
+     * Retrieves a TaskList object by its ID.
+     *
+     * @param id the ID of the TaskList
+     * @return the TaskList object with the specified ID
+     */
+    public TaskListEntity getById(Long id) {
+        return this.taskListRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Task list not found"));
+    }
+
+    /**
      * Updates a task list with the given id by changing its name.
      *
      * @param id   the id of the task list to be updated
@@ -98,7 +109,7 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      * @param taskListEntity the TaskListEntity object to convert
      * @return the converted TaskList object
      */
-    private TaskList entityToDomain(TaskListEntity taskListEntity) {
+    public TaskList entityToDomain(TaskListEntity taskListEntity) {
         return new TaskList(taskListEntity.getId(), taskListEntity.getName(), taskListEntity.getCreatedAt());
     }
 }
