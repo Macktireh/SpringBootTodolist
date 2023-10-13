@@ -1,14 +1,14 @@
-package com.asynclearning.todolist.domain;
+package com.asynclearning.todolist.DTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.asynclearning.todolist.domain.Label;
+import com.asynclearning.todolist.domain.TaskList;
 import com.asynclearning.todolist.enums.Priority;
 import com.asynclearning.todolist.enums.Status;
 
-public class Task {
-
-    private Long id;
+public class TaskRequestDTO {
 
     private String title;
 
@@ -26,7 +26,7 @@ public class Task {
 
     private List<Label> labels;
 
-    public Task(String title, String description, LocalDateTime dueDate, Status status, Priority priority,
+    public TaskRequestDTO(String title, String description, LocalDateTime dueDate, Status status, Priority priority,
             TaskList taskList, LocalDateTime updatedAt, List<Label> labels) {
         this.title = title;
         this.description = description;
@@ -36,27 +36,6 @@ public class Task {
         this.taskList = taskList;
         this.updatedAt = updatedAt;
         this.labels = labels;
-    }
-
-    public Task(Long id, String title, String description, LocalDateTime dueDate, Status status, Priority priority,
-            TaskList taskList, LocalDateTime updatedAt, List<Label> labels) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.dueDate = dueDate;
-        this.status = status;
-        this.priority = priority;
-        this.taskList = taskList;
-        this.updatedAt = updatedAt;
-        this.labels = labels;
-    }
-
-    public Long getId() {
-        return this.id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -122,4 +101,5 @@ public class Task {
     public void setLabels(List<Label> labels) {
         this.labels = labels;
     }
+
 }

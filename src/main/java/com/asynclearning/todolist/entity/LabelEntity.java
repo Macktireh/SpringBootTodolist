@@ -29,6 +29,11 @@ public class LabelEntity {
     public LabelEntity() {
     }
 
+    public LabelEntity(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public LabelEntity(Long id, String name, String color, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
