@@ -59,7 +59,7 @@ public class TaskController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/labels", consumes = APPLICATION_JSON_VALUE)
     public LabelDTO createLabel(@RequestBody LabelDTO labelDTO) {
         return taskServiceInterface.createLabel(labelDTO);
     }
