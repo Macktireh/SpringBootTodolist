@@ -11,9 +11,9 @@ public interface TaskListGatewayInterface {
 
     List<TaskList> getAllTaskLists();
 
-    TaskListEntity getById(Long id);
-
     TaskList getTaskListById(Long id);
+
+    TaskListEntity getTaskListByIdJPA(Long id);
 
     void updateTaskList(Long id, String name);
 

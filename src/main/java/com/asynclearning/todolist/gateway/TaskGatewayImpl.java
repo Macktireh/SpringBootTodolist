@@ -13,6 +13,7 @@ import com.asynclearning.todolist.entity.TaskListEntity;
 import com.asynclearning.todolist.repository.LabelRepository;
 import com.asynclearning.todolist.repository.TaskRepository;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -39,6 +40,9 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      */
     @Override
     public Task createTaskList(Task task) {
+        if (this.taskRepository.findByTitle(task.getTitle()).isPresent()) {
+            throw new EntityExistsException("Task already exists");
+        }
         TaskEntity taskEntity = this.taskRepository.save(domainToEntity(task));
         return this.entityToDomain(taskEntity);
     }
@@ -73,7 +77,9 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
         List<LabelEntity> labels = task.getLabels().stream()
-                .map((label) -> this.labelRepository.findByName(label.getName())).toList();
+                .map((label) -> this.labelRepository.findByName(label.getName())
+                        .orElseThrow(() -> new EntityNotFoundException(label.getName() + " Label not found")))
+                .toList();
 
         taskEntity.setTitle(task.getTitle());
         taskEntity.setDescription(task.getDescription());
@@ -95,6 +101,49 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
     public void deleteTaskList(Long id) {
         this.taskRepository.deleteById(id);
     }
+    
+    /**
+     * Creates a new label.
+     *
+     * @param  label   the label to be created
+     * @return         the created label
+     */
+    @Override
+    public Label createLabel(Label label) {
+        if (this.labelRepository.findByName(label.getName()).isPresent()) {
+            throw new EntityExistsException("Label already exists");
+        }
+        LabelEntity labelEntity = this.labelRepository.save(new LabelEntity(label.getName(), label.getColor()));
+        return new Label(labelEntity.getName(), labelEntity.getColor());
+    }
+
+    /**
+     * Retrieves all labels from the label repository and maps them to a list of Label objects.
+     *
+     * @return  a list of Label objects representing all the labels
+     */
+    @Override
+    public List<Label> getAllLabels() {
+        return this.labelRepository.findAll().stream().map((labelEntity) -> new Label(labelEntity.getName(), labelEntity.getColor())).toList();
+    }
+
+    /**
+     * Adds a label to a task.
+     *
+     * @param  taskId  the ID of the task
+     * @param  name    the name of the label
+     */
+    @Override
+    public void addLabelToTask(Long taskId, String name) {
+        TaskEntity taskEntity = this.taskRepository.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        
+        LabelEntity labelEntity = this.labelRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException("Label not found"));
+
+        taskEntity.getLabel().add(labelEntity);
+        this.taskRepository.save(taskEntity);
+    }
 
     /**
      * Converts a Task object from the domain model to a TaskEntity object for
@@ -105,9 +154,11 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      */
     private TaskEntity domainToEntity(Task task) {
         List<LabelEntity> labels = task.getLabels().stream()
-                .map((label) -> this.labelRepository.findByName(label.getName())).toList();
+                .map((label) -> this.labelRepository.findByName(label.getName())
+                        .orElseThrow(() -> new EntityNotFoundException(label.getName() + " Label not found")))
+                .toList();
 
-        TaskListEntity taskList = this.taskListGatewayInterface.getById(task.getTaskList().getId());
+        TaskListEntity taskList = this.taskListGatewayInterface.getTaskListByIdJPA(task.getTaskList().getId());
 
         return new TaskEntity(
                 task.getTitle(),

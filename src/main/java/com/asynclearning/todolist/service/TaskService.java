@@ -4,7 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.asynclearning.todolist.DTO.LabelDTO;
+import com.asynclearning.todolist.DTO.TaskListResponseDTO;
 import com.asynclearning.todolist.DTO.TaskRequestDTO;
+import com.asynclearning.todolist.DTO.TaskResponseDTO;
+import com.asynclearning.todolist.domain.Label;
 import com.asynclearning.todolist.domain.Task;
 import com.asynclearning.todolist.gateway.TaskGatewayInterface;
 
@@ -25,8 +29,9 @@ public class TaskService implements TaskServiceInterface {
      * @return the created task list
      */
     @Override
-    public Task createTaskList(TaskRequestDTO taskRequestDTO) {
-        return this.taskGatewayInterface.createTaskList(DTOToDomain(taskRequestDTO));
+    public TaskResponseDTO createTaskList(TaskRequestDTO taskRequestDTO) {
+        Task task = this.taskGatewayInterface.createTaskList(DTOToDomain(taskRequestDTO));
+        return domainToDTO(task);
     }
 
     /**
@@ -35,8 +40,8 @@ public class TaskService implements TaskServiceInterface {
      * @return a list of task lists
      */
     @Override
-    public List<Task> getAllTaskLists() {
-        return this.taskGatewayInterface.getAllTaskLists();
+    public List<TaskResponseDTO> getAllTaskLists() {
+        return this.taskGatewayInterface.getAllTaskLists().stream().map((task) -> domainToDTO(task)).toList();
     }
 
     /**
@@ -46,8 +51,8 @@ public class TaskService implements TaskServiceInterface {
      * @return the task corresponding to the given ID, or null if no task is found
      */
     @Override
-    public Task getTaskListById(Long id) {
-        return this.taskGatewayInterface.getTaskListById(id);
+    public TaskResponseDTO getTaskListById(Long id) {
+        return domainToDTO(this.taskGatewayInterface.getTaskListById(id));
     }
 
     /**
@@ -71,6 +76,40 @@ public class TaskService implements TaskServiceInterface {
     public void deleteTaskList(Long id) {
         this.taskGatewayInterface.deleteTaskList(id);
     }
+    
+    /**
+     * Creates a new label.
+     *
+     * @param  labelDTO  the label data transfer object
+     * @return           the created label data transfer object
+     */
+    @Override
+    public LabelDTO createLabel(LabelDTO labelDTO) {
+        Label label = this.taskGatewayInterface.createLabel(new Label(labelDTO.getName(), labelDTO.getColor()));
+        return new LabelDTO(label.getName(), label.getColor());
+    }
+
+
+    /**
+     * Retrieves all labels.
+     *
+     * @return A list of LabelDTO objects representing the labels.
+     */
+    @Override
+    public List<LabelDTO> getAllLabels() {
+        return this.taskGatewayInterface.getAllLabels().stream().map((label) -> new LabelDTO(label.getName(), label.getColor())).toList();
+    }
+    
+    /**
+     * Adds a label to a task.
+     *
+     * @param  taskId  the ID of the task to add the label to
+     * @param  name    the name of the label to add
+     */
+    @Override
+    public void addLabelToTask(Long taskId, String name) {
+        this.taskGatewayInterface.addLabelToTask(taskId, name);
+    }
 
     /**
      * Converts a TaskRequestDTO object to a Task object.
@@ -88,6 +127,26 @@ public class TaskService implements TaskServiceInterface {
                 taskRequestDTO.getTaskList(),
                 taskRequestDTO.getUpdatedAt(),
                 taskRequestDTO.getLabels());
+    }
+
+    private TaskResponseDTO domainToDTO(Task task) {
+        TaskListResponseDTO taskListDTO = new TaskListResponseDTO(
+            task.getTaskList().getId(), 
+            task.getTaskList().getName(), 
+            task.getTaskList().getCreatedAt()
+            );
+        List<LabelDTO> labelsDTO = task.getLabels().stream().map((label) -> new LabelDTO(label.getName(), label.getColor())).toList();
+
+        return new TaskResponseDTO(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDueDate(),
+                task.getStatus(),
+                task.getPriority(),
+                taskListDTO,
+                task.getUpdatedAt(),
+                labelsDTO);
     }
 
 }

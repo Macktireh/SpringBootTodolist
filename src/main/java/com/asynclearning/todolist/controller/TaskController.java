@@ -15,8 +15,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
+import com.asynclearning.todolist.DTO.LabelDTO;
 import com.asynclearning.todolist.DTO.TaskRequestDTO;
-import com.asynclearning.todolist.domain.Task;
+import com.asynclearning.todolist.DTO.TaskResponseDTO;
 import com.asynclearning.todolist.service.TaskServiceInterface;
 
 @RestController
@@ -31,17 +32,17 @@ public class TaskController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public Task create(@RequestBody TaskRequestDTO taskRequestDTO) {
+    public TaskResponseDTO create(@RequestBody TaskRequestDTO taskRequestDTO) {
         return taskServiceInterface.createTaskList(taskRequestDTO);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public List<Task> getAll() {
+    public List<TaskResponseDTO> getAll() {
         return taskServiceInterface.getAllTaskLists();
     }
 
     @GetMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
-    public Task getById(@PathVariable Long id) {
+    public TaskResponseDTO getById(@PathVariable Long id) {
         return taskServiceInterface.getTaskListById(id);
     }
 
@@ -56,5 +57,21 @@ public class TaskController {
     public void delete(@PathVariable Long id) {
         taskServiceInterface.deleteTaskList(id);
     }
-    
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "/labels", consumes = APPLICATION_JSON_VALUE)
+    public LabelDTO createLabel(@RequestBody LabelDTO labelDTO) {
+        return taskServiceInterface.createLabel(labelDTO);
+    }
+
+    @GetMapping(path = "/labels", produces = APPLICATION_JSON_VALUE)
+    public List<LabelDTO> getLabels() {
+        return taskServiceInterface.getAllLabels();
+    }
+
+    @PostMapping(path = "/{taskId}/add-label", consumes = APPLICATION_JSON_VALUE)
+    public void addLabelToTask(@PathVariable Long taskId, @PathVariable String labelName) {
+        taskServiceInterface.addLabelToTask(taskId, labelName);
+    }
+
 }
