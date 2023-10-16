@@ -29,9 +29,10 @@ public class LabelEntity {
     public LabelEntity() {
     }
 
-    public LabelEntity(String name, String color) {
+    public LabelEntity(String name, String color, LocalDateTime createdAt) {
         this.name = name;
         this.color = color;
+        this.createdAt = createdAt;
     }
 
     public LabelEntity(Long id, String name, String color, LocalDateTime createdAt) {

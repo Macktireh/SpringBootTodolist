@@ -2,9 +2,9 @@ package com.asynclearning.todolist.DTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import com.asynclearning.todolist.domain.Label;
-import com.asynclearning.todolist.domain.TaskList;
 import com.asynclearning.todolist.enums.Priority;
 import com.asynclearning.todolist.enums.Status;
 
@@ -20,21 +20,18 @@ public class TaskRequestDTO {
 
     private Priority priority;
 
-    private TaskList taskList;
+    private String taskListName;
 
-    private LocalDateTime updatedAt;
-
-    private List<Label> labels;
+    private Optional<List<Label>> labels;
 
     public TaskRequestDTO(String title, String description, LocalDateTime dueDate, Status status, Priority priority,
-            TaskList taskList, LocalDateTime updatedAt, List<Label> labels) {
+            String taskListName, Optional<List<Label>> labels) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.status = status;
         this.priority = priority;
-        this.taskList = taskList;
-        this.updatedAt = updatedAt;
+        this.taskListName = taskListName;
         this.labels = labels;
     }
 
@@ -78,28 +75,20 @@ public class TaskRequestDTO {
         this.priority = priority;
     }
 
-    public TaskList getTaskList() {
-        return this.taskList;
+    public String getTaskListName() {
+        return this.taskListName;
     }
 
-    public void setTaskList(TaskList taskList) {
-        this.taskList = taskList;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setTaskListName(String taskListName) {
+        this.taskListName = taskListName;
     }
 
     public List<Label> getLabels() {
-        return this.labels;
+        return this.labels == null ? null : this.labels.get();
     }
 
     public void setLabels(List<Label> labels) {
-        this.labels = labels;
+        this.labels = Optional.of(labels);
     }
 
 }

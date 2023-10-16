@@ -1,5 +1,6 @@
 package com.asynclearning.todolist.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.asynclearning.todolist.DTO.TaskRequestDTO;
 import com.asynclearning.todolist.DTO.TaskResponseDTO;
 import com.asynclearning.todolist.domain.Label;
 import com.asynclearning.todolist.domain.Task;
+import com.asynclearning.todolist.domain.TaskList;
 import com.asynclearning.todolist.gateway.TaskGatewayInterface;
 
 @Service
@@ -18,7 +20,9 @@ public class TaskService implements TaskServiceInterface {
     private final TaskGatewayInterface taskGatewayInterface;
 
     public TaskService(TaskGatewayInterface taskGatewayInterface) {
+
         this.taskGatewayInterface = taskGatewayInterface;
+
     }
 
     /**
@@ -30,8 +34,9 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public TaskResponseDTO createTaskList(TaskRequestDTO taskRequestDTO) {
-        Task task = this.taskGatewayInterface.createTaskList(DTOToDomain(taskRequestDTO));
-        return domainToDTO(task);
+
+        return this.domainToDTO(this.taskGatewayInterface.createTaskList(DTOToDomain(taskRequestDTO)));
+
     }
 
     /**
@@ -41,7 +46,9 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public List<TaskResponseDTO> getAllTaskLists() {
+
         return this.taskGatewayInterface.getAllTaskLists().stream().map((task) -> domainToDTO(task)).toList();
+
     }
 
     /**
@@ -52,7 +59,9 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public TaskResponseDTO getTaskListById(Long id) {
-        return domainToDTO(this.taskGatewayInterface.getTaskListById(id));
+
+        return this.domainToDTO(this.taskGatewayInterface.getTaskListById(id));
+
     }
 
     /**
@@ -64,7 +73,9 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public void updateTaskList(Long id, TaskRequestDTO taskRequestDTO) {
+
         this.taskGatewayInterface.updateTaskList(id, DTOToDomain(taskRequestDTO));
+
     }
 
     /**
@@ -74,7 +85,9 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public void deleteTaskList(Long id) {
+
         this.taskGatewayInterface.deleteTaskList(id);
+
     }
     
     /**
@@ -85,8 +98,11 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public LabelDTO createLabel(LabelDTO labelDTO) {
+
         Label label = this.taskGatewayInterface.createLabel(new Label(labelDTO.getName(), labelDTO.getColor()));
+
         return new LabelDTO(label.getName(), label.getColor());
+
     }
 
 
@@ -97,7 +113,9 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public List<LabelDTO> getAllLabels() {
+
         return this.taskGatewayInterface.getAllLabels().stream().map((label) -> new LabelDTO(label.getName(), label.getColor())).toList();
+
     }
     
     /**
@@ -108,7 +126,9 @@ public class TaskService implements TaskServiceInterface {
      */
     @Override
     public void addLabelToTask(Long taskId, String name) {
+
         this.taskGatewayInterface.addLabelToTask(taskId, name);
+
     }
 
     /**
@@ -118,23 +138,29 @@ public class TaskService implements TaskServiceInterface {
      * @return the converted Task object
      */
     private Task DTOToDomain(TaskRequestDTO taskRequestDTO) {
+
+        TaskList taskList = new TaskList(taskRequestDTO.getTaskListName(), LocalDateTime.now());
+
         return new Task(
                 taskRequestDTO.getTitle(),
                 taskRequestDTO.getDescription(),
                 taskRequestDTO.getDueDate(),
                 taskRequestDTO.getStatus(),
                 taskRequestDTO.getPriority(),
-                taskRequestDTO.getTaskList(),
-                taskRequestDTO.getUpdatedAt(),
-                taskRequestDTO.getLabels());
+                taskList,
+                LocalDateTime.now(),
+                taskRequestDTO.getLabels()
+            );
     }
 
     private TaskResponseDTO domainToDTO(Task task) {
+
         TaskListResponseDTO taskListDTO = new TaskListResponseDTO(
             task.getTaskList().getId(), 
             task.getTaskList().getName(), 
             task.getTaskList().getCreatedAt()
             );
+
         List<LabelDTO> labelsDTO = task.getLabels().stream().map((label) -> new LabelDTO(label.getName(), label.getColor())).toList();
 
         return new TaskResponseDTO(
@@ -146,7 +172,9 @@ public class TaskService implements TaskServiceInterface {
                 task.getPriority(),
                 taskListDTO,
                 task.getUpdatedAt(),
-                labelsDTO);
+                labelsDTO
+            );
+
     }
 
 }

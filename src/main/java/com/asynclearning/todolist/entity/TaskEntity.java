@@ -59,6 +59,17 @@ public class TaskEntity {
     }
 
     public TaskEntity(String title, String description, LocalDateTime dueDate, Status status, Priority priority,
+            LocalDateTime updatedAt, TaskListEntity taskList) {
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.status = status;
+        this.priority = priority;
+        this.updatedAt = updatedAt;
+        this.taskList = taskList;
+    }
+
+    public TaskEntity(String title, String description, LocalDateTime dueDate, Status status, Priority priority,
             LocalDateTime updatedAt, TaskListEntity taskList, List<LabelEntity> label) {
         this.title = title;
         this.description = description;

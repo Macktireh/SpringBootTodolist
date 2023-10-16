@@ -10,6 +10,11 @@ public class TaskList {
 
     private LocalDateTime createdAt;
 
+    public TaskList(String name, LocalDateTime createdAt) {
+        this.name = name;
+        this.createdAt = createdAt;
+    }
+
     public TaskList(Long id ,String name, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;

@@ -15,7 +15,9 @@ public class TaskListService implements TaskListServiceInterface {
     private final TaskListGatewayInterface taskListGatewayInterface;
 
     public TaskListService(TaskListGatewayInterface taskListGatewayInterface) {
+
         this.taskListGatewayInterface = taskListGatewayInterface;
+
     }
 
     /**
@@ -26,8 +28,9 @@ public class TaskListService implements TaskListServiceInterface {
      * @return the created TaskList
      */
     public TaskListResponseDTO createTaskList(TaskListRequestDTO taskListRequestDTO) {
-        TaskList taskList = taskListGatewayInterface.createTaskList(taskListRequestDTO.getName());
-        return domainToDTO(taskList);
+
+        return this.domainToDTO(taskListGatewayInterface.createTaskList(taskListRequestDTO.getName()));
+
     }
 
     /**
@@ -36,8 +39,9 @@ public class TaskListService implements TaskListServiceInterface {
      * @return A list of TaskListResponseDTO objects representing the task lists.
      */
     public List<TaskListResponseDTO> getAllTaskLists() {
-        return taskListGatewayInterface.getAllTaskLists().stream().map((domainTaskList) -> domainToDTO(domainTaskList))
-                .toList();
+
+        return taskListGatewayInterface.getAllTaskLists().stream().map((domainTaskList) -> this.domainToDTO(domainTaskList)).toList();
+
     }
 
     /**
@@ -47,8 +51,9 @@ public class TaskListService implements TaskListServiceInterface {
      * @return the task list with the specified ID
      */
     public TaskListResponseDTO getTaskListById(Long id) {
-        TaskList taskList = taskListGatewayInterface.getTaskListById(id);
-        return domainToDTO(taskList);
+
+        return this.domainToDTO(taskListGatewayInterface.getTaskListById(id));
+
     }
 
     /**
@@ -59,7 +64,9 @@ public class TaskListService implements TaskListServiceInterface {
      *                           information
      */
     public void updateTaskList(Long id, TaskListRequestDTO taskListRequestDTO) {
+
         taskListGatewayInterface.updateTaskList(id, taskListRequestDTO.getName());
+
     }
 
     /**
@@ -68,7 +75,9 @@ public class TaskListService implements TaskListServiceInterface {
      * @param id the ID of the task list to be deleted
      */
     public void deleteTaskList(Long id) {
+
         taskListGatewayInterface.deleteTaskList(id);
+
     }
 
     /**
@@ -78,7 +87,9 @@ public class TaskListService implements TaskListServiceInterface {
      * @return the TaskListResponseDTO
      */
     private TaskListResponseDTO domainToDTO(TaskList taskList) {
+
         return new TaskListResponseDTO(taskList.getId(), taskList.getName(), taskList.getCreatedAt());
+
     }
 
 }
