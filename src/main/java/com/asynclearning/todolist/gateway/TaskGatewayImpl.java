@@ -27,9 +27,11 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
 
     public TaskGatewayImpl(TaskListGatewayInterface taskListGatewayInterface, TaskRepository taskRepository,
             LabelRepository labelRepository) {
+
         this.taskListGatewayInterface = taskListGatewayInterface;
         this.taskRepository = taskRepository;
         this.labelRepository = labelRepository;
+
     }
 
     /**
@@ -40,16 +42,20 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      */
     @Override
     public Task createTaskList(Task task) {
+
         if (this.taskRepository.findByTitle(task.getTitle()).isPresent()) {
             throw new EntityExistsException("Task already exists");
         }
-        TaskEntity taskEntity = this.taskRepository.save(domainToEntity(task));
-        return this.entityToDomain(taskEntity);
+
+        return this.entityToDomain(this.taskRepository.save(domainToEntity(task)));
+
     }
 
     @Override
     public List<Task> getAllTaskLists() {
+
         return this.taskRepository.findAll().stream().map((taskEntity) -> this.entityToDomain(taskEntity)).toList();
+
     }
 
     /**
@@ -60,9 +66,9 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      */
     @Override
     public Task getTaskListById(Long id) {
-        TaskEntity taskEntity = this.taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
-        return this.entityToDomain(taskEntity);
+
+        return this.entityToDomain(this.taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task not found")));
+
     }
 
     /**
@@ -73,8 +79,8 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      */
     @Override
     public void updateTaskList(Long id, Task task) {
-        TaskEntity taskEntity = this.taskRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
+
+        TaskEntity taskEntity = this.taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
         List<LabelEntity> labels = task.getLabels().stream()
                 .map((label) -> this.labelRepository.findByName(label.getName())
@@ -90,6 +96,7 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
         taskEntity.setLabel(labels);
 
         this.taskRepository.save(taskEntity);
+
     }
 
     /**
@@ -99,50 +106,64 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      */
     @Override
     public void deleteTaskList(Long id) {
+
         this.taskRepository.deleteById(id);
-    }
-    
-    /**
-     * Creates a new label.
-     *
-     * @param  label   the label to be created
-     * @return         the created label
-     */
-    @Override
-    public Label createLabel(Label label) {
-        if (this.labelRepository.findByName(label.getName()).isPresent()) {
-            throw new EntityExistsException("Label already exists");
-        }
-        LabelEntity labelEntity = this.labelRepository.save(new LabelEntity(label.getName(), label.getColor()));
-        return new Label(labelEntity.getName(), labelEntity.getColor());
+
     }
 
     /**
-     * Retrieves all labels from the label repository and maps them to a list of Label objects.
+     * Creates a new label.
      *
-     * @return  a list of Label objects representing all the labels
+     * @param label the label to be created
+     * @return the created label
+     */
+    @Override
+    public Label createLabel(Label label) {
+
+        if (this.labelRepository.findByName(label.getName()).isPresent()) {
+            throw new EntityExistsException("Label already exists");
+        }
+
+        if (this.labelRepository.findByColor(label.getColor()).isPresent()) {
+            throw new EntityExistsException("Label color already exists");
+        }
+
+        LabelEntity labelEntity = this.labelRepository.save(new LabelEntity(label.getName(), label.getColor(), LocalDateTime.now()));
+        
+        return new Label(labelEntity.getName(), labelEntity.getColor());
+
+    }
+
+    /**
+     * Retrieves all labels from the label repository and maps them to a list of
+     * Label objects.
+     *
+     * @return a list of Label objects representing all the labels
      */
     @Override
     public List<Label> getAllLabels() {
+
         return this.labelRepository.findAll().stream().map((labelEntity) -> new Label(labelEntity.getName(), labelEntity.getColor())).toList();
+
     }
 
     /**
      * Adds a label to a task.
      *
-     * @param  taskId  the ID of the task
-     * @param  name    the name of the label
+     * @param taskId the ID of the task
+     * @param name   the name of the label
      */
     @Override
     public void addLabelToTask(Long taskId, String name) {
-        TaskEntity taskEntity = this.taskRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
-        
-        LabelEntity labelEntity = this.labelRepository.findByName(name)
-                .orElseThrow(() -> new EntityNotFoundException("Label not found"));
 
+        TaskEntity taskEntity = this.taskRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        
+        LabelEntity labelEntity = this.labelRepository.findByName(name).orElseThrow(() -> new EntityNotFoundException("Label not found"));
+        
         taskEntity.getLabel().add(labelEntity);
+        
         this.taskRepository.save(taskEntity);
+
     }
 
     /**
@@ -153,6 +174,7 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      * @return the converted TaskEntity object
      */
     private TaskEntity domainToEntity(Task task) {
+
         List<LabelEntity> labels = task.getLabels().stream()
                 .map((label) -> this.labelRepository.findByName(label.getName())
                         .orElseThrow(() -> new EntityNotFoundException(label.getName() + " Label not found")))
@@ -179,8 +201,7 @@ public class TaskGatewayImpl implements TaskGatewayInterface {
      */
     private Task entityToDomain(TaskEntity taskEntity) {
 
-        List<Label> labels = taskEntity.getLabel().stream()
-                .map((label) -> new Label(label.getName(), label.getColor())).toList();
+        List<Label> labels = taskEntity.getLabel().stream().map((label) -> new Label(label.getName(), label.getColor())).toList();
 
         return new Task(
                 taskEntity.getId(),

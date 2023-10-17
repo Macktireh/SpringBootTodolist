@@ -27,6 +27,17 @@ public class Task {
     private List<Label> labels;
 
     public Task(String title, String description, LocalDateTime dueDate, Status status, Priority priority,
+            TaskList taskList, LocalDateTime updatedAt) {
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.status = status;
+        this.priority = priority;
+        this.taskList = taskList;
+        this.updatedAt = updatedAt;
+    }
+
+    public Task(String title, String description, LocalDateTime dueDate, Status status, Priority priority,
             TaskList taskList, LocalDateTime updatedAt, List<Label> labels) {
         this.title = title;
         this.description = description;

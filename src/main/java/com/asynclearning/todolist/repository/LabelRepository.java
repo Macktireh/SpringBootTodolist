@@ -11,4 +11,6 @@ public interface LabelRepository extends JpaRepository<LabelEntity, Long> {
 
     Optional<LabelEntity> findByName(String name);
 
+    Optional<LabelEntity> findByColor(String color);
+
 }

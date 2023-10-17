@@ -18,7 +18,9 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
     private final TaskListRepository taskListRepository;
 
     public TaskListGatewayImpl(TaskListRepository taskListRepository) {
+
         this.taskListRepository = taskListRepository;
+
     }
 
     /**
@@ -29,11 +31,13 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      */
     @Override
     public TaskList createTaskList(String name) {
+
         if (this.taskListRepository.findByName(name).isPresent()) {
             throw new EntityExistsException("Task list already exists");
         }
-        TaskListEntity taskListEntity = this.taskListRepository.save(domainToEntity(name));
-        return this.entityToDomain(taskListEntity);
+
+        return this.entityToDomain(this.taskListRepository.save(domainToEntity(name)));
+
     }
 
     /**
@@ -43,7 +47,9 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      */
     @Override
     public List<TaskList> getAllTaskLists() {
+
         return this.taskListRepository.findAll().stream().map((taskListEntity) -> this.entityToDomain(taskListEntity)).toList();
+
     }
 
     /**
@@ -54,8 +60,11 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      */
     @Override
     public TaskList getTaskListById(Long id) {
+
         TaskListEntity taskListEntity = this.taskListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task list not found"));
+
         return this.entityToDomain(taskListEntity);
+
     }
 
     /**
@@ -66,7 +75,9 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      */
     @Override
     public TaskListEntity getTaskListByIdJPA(Long id) {
+
         return this.taskListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task list not found"));
+
     }
 
     /**
@@ -77,9 +88,13 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      */
     @Override
     public void updateTaskList(Long id, String name) {
+
         TaskListEntity taskListEntity = this.taskListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task list not found"));
+
         taskListEntity.setName(name);
+
         this.taskListRepository.save(taskListEntity);
+
     }
 
     /**
@@ -89,8 +104,11 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      */
     @Override
     public void deleteTaskList(Long id) {
+
         TaskListEntity taskListEntity = this.taskListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task list not found"));
+        
         this.taskListRepository.delete(taskListEntity);
+
     }
 
     /**
@@ -100,7 +118,9 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      * @return the converted entity object
      */
     private TaskListEntity domainToEntity(String name) {
+
         return new TaskListEntity(name, LocalDateTime.now());
+
     }
 
     /**
@@ -111,6 +131,8 @@ public class TaskListGatewayImpl implements TaskListGatewayInterface {
      */
     @Override
     public TaskList entityToDomain(TaskListEntity taskListEntity) {
+
         return new TaskList(taskListEntity.getId(), taskListEntity.getName(), taskListEntity.getCreatedAt());
+
     }
 }

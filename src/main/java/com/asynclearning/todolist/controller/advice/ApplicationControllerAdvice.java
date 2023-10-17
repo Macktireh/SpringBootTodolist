@@ -26,4 +26,10 @@ public class ApplicationControllerAdvice {
         return new ErrorDTO(HttpStatus.CONFLICT.value(), exception.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler({ Exception.class })
+    public @ResponseBody ErrorDTO handleException(Exception exception) {
+        return new ErrorDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage());
+    }
+
 }
