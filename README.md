@@ -19,7 +19,7 @@ Before you begin, ensure you have met the following requirements:
 - Java 17 or higher installed.
 - Maven for building the project.
 - An IDE (Eclipse, IntelliJ IDEA, VSCode, etc.) or a code editor of your choice. Personally, I use VSCode.
-- [Spring Boot](https://spring.io/projects/spring-boot) knowledge.
+- Java and [Spring Boot](https://spring.io/projects/spring-boot) knowledge.
 
 ## Getting Started
 
